@@ -6,6 +6,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Telegram.Bot.Types;
+using Telegram.Bot;
 
 namespace UserManagementFunction;
 
@@ -16,18 +18,21 @@ public static class ManagementFunction
         [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
         ILogger log)
     {
-        log.LogInformation("C# HTTP trigger function processed a request.");
-
-        string name = req.Query["name"];
-
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-        dynamic data = JsonConvert.DeserializeObject(requestBody);
-        name = name ?? data?.name;
+        var update = JsonConvert.DeserializeObject<Update>(requestBody);
 
-        string responseMessage = string.IsNullOrEmpty(name)
-            ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-            : $"Hello, {name}. This HTTP triggered function executed successfully.";
+        // Initialize the Telegram Bot client
+        var botClient = new TelegramBotClient("");
 
-        return new OkObjectResult(responseMessage);
+        if (update?.Message?.Text != null)
+        {
+            // Echo the received message text
+            await botClient.SendTextMessageAsync(
+                chatId: update.Message.Chat.Id,
+                text: $"You said: {update.Message.Text}"
+            );
+        }
+
+        return new OkResult();
     }
 }

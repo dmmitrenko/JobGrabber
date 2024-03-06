@@ -8,6 +8,6 @@ public class Subscription
     public Guid UserId { get; set; }
     public string Keyword { get; set; }
     public double Experience { get; set; }
-    public EnglishLevel EnglishLevel { get; set; }
+    public EnglishLevels EnglishLevel { get; set; }
     public List<JobWebsites> PreferredWebsites { get; set; }
 }

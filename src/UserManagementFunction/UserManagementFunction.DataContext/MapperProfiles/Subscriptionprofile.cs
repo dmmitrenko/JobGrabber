@@ -16,6 +16,6 @@ public class SubscriptionProfile : Profile
 
         CreateMap<Subscription, Domain.Models.Subscription>()
             .ForMember(x => x.PreferredWebsites, src => src.MapFrom(dest => JsonConvert.DeserializeObject<List<JobWebsites>>(dest.PreferredWebsites)))
-            .ForMember(x => x.EnglishLevel, src => src.MapFrom(dest => Enum.Parse<EnglishLevel>(dest.EnglishLevel, true)));
+            .ForMember(x => x.EnglishLevel, src => src.MapFrom(dest => Enum.Parse<EnglishLevels>(dest.EnglishLevel, true)));
     }
 }

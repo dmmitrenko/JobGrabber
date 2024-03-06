@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Data.Tables;
-using Newtonsoft.Json;
 using UserManagementFunction.DataContext.Entities;
-using UserManagementFunction.Domain.Enums;
 using UserManagementFunction.Infrastructure.Repositories;
 
 namespace UserManagementFunction.DataContext.Repositories;
@@ -16,13 +14,11 @@ public class SubscriptionRepository : ISubscriptionRepository
         _mapper = mapper;
     }
 
-    public async Task<Domain.Models.Subscription> AddSubscription(Domain.Models.Subscription subscriptionModel, Guid userId, CancellationToken cancellationToken = default)
+    public async Task AddSubscription(Domain.Models.Subscription subscriptionModel, CancellationToken cancellationToken = default)
     {
         var tableClient = await GetTableClient(cancellationToken);
         var subscription = _mapper.Map<Subscription>(subscriptionModel);
         await tableClient.UpsertEntityAsync(subscription);
-
-        return subscriptionModel;
     }
 
     public async Task<List<Domain.Models.Subscription>> GetAllSubscriptionsByUserId(Guid userId, CancellationToken cancellationToken = default)

@@ -1,5 +1,5 @@
 ﻿namespace UserManagementFunction.Domain.Enums;
-public enum EnglishLevel : short
+public enum EnglishLevels : short
 {
     Beginner,
     Intermediate,
