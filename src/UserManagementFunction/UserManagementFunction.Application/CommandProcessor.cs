@@ -1,42 +1,44 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
 using UserManagementFunction.Application.Commands;
 using UserManagementFunction.Domain.Enums;
 using UserManagementFunction.Domain.Models;
 using UserManagementFunction.Infrastructure;
+using UserManagementFunction.Infrastructure.Settings;
 
 namespace UserManagementFunction.Application;
 public class CommandProcessor : ICommandProcessor
 {
     private Dictionary<string, Func<Message, Task>> _commandHandlers;
     private readonly IMediator _mediator;
+    private readonly AddSubscriptionCommandSettings _addSubscriptionOptions;
 
-    public CommandProcessor(IMediator mediator)
+    public CommandProcessor(
+        IMediator mediator, 
+        IOptions<AddSubscriptionCommandSettings> addSubscriptionOptions)
     {
         _commandHandlers = new Dictionary<string, Func<Message, Task>>
         {
-            { nameof(Domain.Enums.Commands.AddSubscription), HandleAddSubscriptionCommand },
+            { _addSubscriptionOptions.Command, HandleAddSubscriptionCommand },
             { nameof(Domain.Enums.Commands.DeleteSubscription), HandleDeleteSubscriptionCommand },
             { nameof(Domain.Enums.Commands.GetSubscriptions), HandleGetSubscriptionsCommand },
         };
-        _mediator = mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _addSubscriptionOptions = addSubscriptionOptions.Value;
     }
 
     public async Task HandleCommand(Message message)
     {
         var text = message.Text;
-
-        if (!text.StartsWith("/"))
-        {
-            throw new DomainException("Input must start with a slash '/'.");
-        }
-
         var command = text.Split(new[] { ' ' })[0];
 
-        if (_commandHandlers.TryGetValue(command, out var handler))
+        if (!_commandHandlers.TryGetValue(command, out var handler))
         {
-            await handler(message);
+            throw new DomainException("There is no such command.");
         }
+
+        await handler(message);
     }
 
     private Task HandleGetSubscriptionsCommand(Message message)
@@ -51,33 +53,23 @@ public class CommandProcessor : ICommandProcessor
     private async Task HandleAddSubscriptionCommand(Message message)
     {
         var parameters = ParseParameters(message.Text);
-        var requiredParameters = new List<string>()
-        {
-            nameof(Subscription.Title),
-            nameof(Subscription.Keyword),
-            nameof(Subscription.Experience),
-            nameof(Subscription.EnglishLevel)
-        };
+        var validationResult = CommandValidator.ValidateAddSubscription(parameters);
 
-
-        if (!IsValidationSuccess(parameters, requiredParameters))
+        if (!validationResult.IsValid)
         {
-            throw new DomainException();
+            throw new DomainException(string.Join("\n", validationResult.Errors));
         }
-
-
-        var subscription = new Subscription
-        {
-            UserId = message.From.Id,
-            Title = parameters[nameof(Subscription.Title)],
-            Keyword = parameters[nameof(Subscription.Keyword)],
-            Experience = Convert.ToDouble(parameters[nameof(Subscription.Experience)]),
-            EnglishLevel = Enum.Parse<EnglishLevels>(parameters[nameof(Subscription.EnglishLevel)])
-        };
 
         var command = new AddSubscriptionCommand
         {
-            Subscription = subscription
+            Subscription = new Subscription
+            {
+                UserId = message.From.Id,
+                Title = parameters[_addSubscriptionOptions.TitleParameter],
+                Specialty = parameters[_addSubscriptionOptions.SpecialtyParameter],
+                Experience = Convert.ToDouble(parameters[_addSubscriptionOptions.ExperienceParameter]),
+                PreferredWebsites = new List<JobWebsites> { JobWebsites.Djini, JobWebsites.DOU },
+            }
         };
 
         await _mediator.Send(command);
@@ -85,28 +77,9 @@ public class CommandProcessor : ICommandProcessor
 
     private Dictionary<string, string> ParseParameters(string messageText)
     {
-        var parts = messageText.Split(' ', 2);
-        var allParameters = parts[1];
-
-        var parameters = allParameters
-            .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(part => part.Split('='))
-            .Where(part => part.Length == 2)
-            .ToDictionary(split => split[0], split => split[1], StringComparer.OrdinalIgnoreCase);
-
-        return parameters;
-    }
-
-    private bool IsValidationSuccess(Dictionary<string, string> parameters, List<string> requiredParameters)
-    {
-        foreach (var paramName in requiredParameters)
-        {
-            if (!parameters.TryGetValue(paramName, out var value) || string.IsNullOrWhiteSpace(value))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return messageText.Split(' ').Skip(1)
+             .Select(part => part.Split('='))
+             .Where(part => part.Length == 2)
+             .ToDictionary(split => split[0], split => split[1], StringComparer.OrdinalIgnoreCase);
     }
 }
