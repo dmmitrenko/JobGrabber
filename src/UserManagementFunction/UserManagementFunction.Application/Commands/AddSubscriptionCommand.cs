@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using Telegram.Bot.Types;
+using UserManagementFunction.Domain.Models;
 
 namespace UserManagementFunction.Application.Commands;
 public class AddSubscriptionCommand : IRequest
 {
-    public Message Message { get; set; }
+    public Subscription Subscription { get; set; }
 }

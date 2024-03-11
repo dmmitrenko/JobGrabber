@@ -4,8 +4,8 @@ namespace UserManagementFunction.Domain.Models;
 
 public class Subscription
 {
-    public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public string Title { get; set; }
+    public long UserId { get; set; }
     public string Keyword { get; set; }
     public double Experience { get; set; }
     public EnglishLevels EnglishLevel { get; set; }

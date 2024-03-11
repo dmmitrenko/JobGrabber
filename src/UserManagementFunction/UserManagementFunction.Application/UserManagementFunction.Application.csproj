@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\UserManagementFunction.Domain\UserManagementFunction.Domain.csproj" />
     <ProjectReference Include="..\UserManagementFunction.Infrastructure\UserManagementFunction.Infrastructure.csproj" />
   </ItemGroup>
 
