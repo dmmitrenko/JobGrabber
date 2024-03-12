@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Azure;
 using Azure.Data.Tables;
-using System.Threading;
-using Telegram.Bot.Types;
 using UserManagementFunction.DataContext.Entities;
 using UserManagementFunction.Infrastructure;
 using UserManagementFunction.Infrastructure.Repositories;
