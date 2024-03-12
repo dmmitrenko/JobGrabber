@@ -98,7 +98,13 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     private async Task<TableClient> GetTableClient(CancellationToken cancellationToken = default)
     {
-        var serviceClient = new TableServiceClient("");
+        var connectionString = Environment.GetEnvironmentVariable("TableStorageConnectionString");
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("Table storage connection string is not configured.");
+        }
+
+        var serviceClient = new TableServiceClient(connectionString);
 
         var tableClient = serviceClient.GetTableClient(TableName);
         await tableClient.CreateIfNotExistsAsync(cancellationToken);

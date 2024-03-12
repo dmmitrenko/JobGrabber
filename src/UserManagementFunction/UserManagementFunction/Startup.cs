@@ -16,7 +16,13 @@ public class Startup : FunctionsStartup
 {
     public override void Configure(IFunctionsHostBuilder builder)
     {
-        builder.Services.AddSingleton<ITelegramBotClient, TelegramBotClient>(sp => new TelegramBotClient(""));
+        var botToken = Environment.GetEnvironmentVariable("TelegramBotToken");
+        if (string.IsNullOrEmpty(botToken))
+        {
+            throw new InvalidOperationException("Telegram bot token is not configured.");
+        }
+
+        builder.Services.AddSingleton<ITelegramBotClient, TelegramBotClient>(sp => new TelegramBotClient(botToken));
         builder.Services.ConfigureMediatR();
         builder.Services.ConfigureAutomapper();
 
