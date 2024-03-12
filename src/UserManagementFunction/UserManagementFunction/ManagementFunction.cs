@@ -82,6 +82,12 @@ public class ManagementFunction
 
     private async Task BotOnMessageReceived(Message? message, CancellationToken cancellationToken)
     {
-        await _commandProcessor.HandleCommand(message);
+        var response = await _commandProcessor.HandleCommand(message, cancellationToken);
+
+        await _telegramBotClient.SendTextMessageAsync(
+            message.Chat.Id,
+            response,
+            disableWebPagePreview: true,
+            parseMode: ParseMode.Markdown);
     }
 }

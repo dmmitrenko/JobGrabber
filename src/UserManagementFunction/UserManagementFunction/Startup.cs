@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using Telegram.Bot;
 using UserManagementFunction.Application;
 using UserManagementFunction.DataContext.Repositories;
@@ -28,5 +29,14 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddOptions<AddSubscriptionCommandSettings>()
                 .Configure(options => configuration.GetSection(nameof(AddSubscriptionCommandSettings)).Bind(options));
+
+        builder.Services.AddOptions<GetSubscriptionsCommandSettings>()
+                .Configure(options => configuration.GetSection(nameof(GetSubscriptionsCommandSettings)).Bind(options));
+
+        builder.Services.AddOptions<DeleteSubscriptionCommandSettings>()
+                .Configure(options => configuration.GetSection(nameof(DeleteSubscriptionCommandSettings)).Bind(options));
+
+        var value = configuration["GetSubscriptionsCommandSettings:Command"];
+        Console.WriteLine($"Config value: {value}");
     }
 }

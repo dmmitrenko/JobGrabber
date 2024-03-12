@@ -3,5 +3,5 @@
 namespace UserManagementFunction.Infrastructure;
 public interface ICommandProcessor
 {
-    Task HandleCommand(Message message);
+    Task<string> HandleCommand(Message message, CancellationToken cancellationToken = default);
 }

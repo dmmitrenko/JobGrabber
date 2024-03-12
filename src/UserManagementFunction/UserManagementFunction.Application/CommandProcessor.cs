@@ -10,25 +10,32 @@ using UserManagementFunction.Infrastructure.Settings;
 namespace UserManagementFunction.Application;
 public class CommandProcessor : ICommandProcessor
 {
-    private Dictionary<string, Func<Message, Task>> _commandHandlers;
+    private Dictionary<string, Func<Message, Task<string>>> _commandHandlers;
     private readonly IMediator _mediator;
+    private readonly DeleteSubscriptionCommandSettings _deleteSubscriptionCommand;
+    private readonly GetSubscriptionsCommandSettings _getSubscriptionsCommand;
     private readonly AddSubscriptionCommandSettings _addSubscriptionOptions;
 
     public CommandProcessor(
         IMediator mediator, 
-        IOptions<AddSubscriptionCommandSettings> addSubscriptionOptions)
+        IOptions<AddSubscriptionCommandSettings> addSubscriptionCommand,
+        IOptions<DeleteSubscriptionCommandSettings> deleteSubscriptionCommand,
+        IOptions<GetSubscriptionsCommandSettings> getSubscriptionsCommand)
     {
-        _commandHandlers = new Dictionary<string, Func<Message, Task>>
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _deleteSubscriptionCommand = deleteSubscriptionCommand.Value;
+        _getSubscriptionsCommand = getSubscriptionsCommand.Value;
+        _addSubscriptionOptions = addSubscriptionCommand.Value;
+
+        _commandHandlers = new Dictionary<string, Func<Message, Task<string>>>
         {
             { _addSubscriptionOptions.Command, HandleAddSubscriptionCommand },
-            { nameof(Domain.Enums.Commands.DeleteSubscription), HandleDeleteSubscriptionCommand },
-            { nameof(Domain.Enums.Commands.GetSubscriptions), HandleGetSubscriptionsCommand },
+            { _deleteSubscriptionCommand.Command, HandleDeleteSubscriptionCommand },
+            { _getSubscriptionsCommand.Command, HandleGetSubscriptionsCommand },
         };
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _addSubscriptionOptions = addSubscriptionOptions.Value;
     }
 
-    public async Task HandleCommand(Message message)
+    public async Task<string> HandleCommand(Message message, CancellationToken cancellationToken = default)
     {
         var text = message.Text;
         var command = text.Split(new[] { ' ' })[0];
@@ -38,22 +45,45 @@ public class CommandProcessor : ICommandProcessor
             throw new DomainException("There is no such command.");
         }
 
-        await handler(message);
+        return await handler(message);
     }
 
-    private Task HandleGetSubscriptionsCommand(Message message)
+    private async Task<string> HandleGetSubscriptionsCommand(Message message)
     {
-        throw new NotImplementedException();
-    }
-    private Task HandleDeleteSubscriptionCommand(Message message)
-    {
-        throw new NotImplementedException();
-    }
+        var userId = message.From.Id;
 
-    private async Task HandleAddSubscriptionCommand(Message message)
+        var command = new GetSubscriptionsCommand
+        {
+            UserId = userId,
+        };
+
+        var subscriptions = await _mediator.Send(command);
+        return "Your subscriptions:\n" + string.Join("\n", subscriptions.Select(s => $"- [{s.Title}] {s.Specialty}, {s.Experience}"));
+    }
+    private async Task<string> HandleDeleteSubscriptionCommand(Message message)
     {
         var parameters = ParseParameters(message.Text);
-        var validationResult = CommandValidator.ValidateAddSubscription(parameters);
+        var validationResult = CommandValidator.ValidateDeleteSubscription(parameters, _deleteSubscriptionCommand);
+
+        if (!validationResult.IsValid)
+        {
+            throw new DomainException(string.Join("\n", validationResult.Errors));
+        }
+
+        var command = new DeleteSubscriptionCommand
+        {
+            UserId = message.From.Id,
+            SubscriptionTitle = parameters[_deleteSubscriptionCommand.SubscriptionTitleParameter]
+        };
+
+        await _mediator.Send(command);
+        return "Your subscription has been successfully deleted!";
+    }
+
+    private async Task<string> HandleAddSubscriptionCommand(Message message)
+    {
+        var parameters = ParseParameters(message.Text);
+        var validationResult = CommandValidator.ValidateAddSubscription(parameters, _addSubscriptionOptions);
 
         if (!validationResult.IsValid)
         {
@@ -73,6 +103,8 @@ public class CommandProcessor : ICommandProcessor
         };
 
         await _mediator.Send(command);
+
+        return "Your subscription has been successfully added!";
     }
 
     private Dictionary<string, string> ParseParameters(string messageText)
