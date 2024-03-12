@@ -32,6 +32,8 @@ public class ManagementFunction
         ILogger log)
     {
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+        log.LogInformation(requestBody);
+        await Console.Out.WriteLineAsync(requestBody);
         var update = JsonConvert.DeserializeObject<Update>(requestBody);
 
         if (update == null)
