@@ -64,10 +64,10 @@ public class ManagementFunction
                $"Something went wrong &#129430;",
                disableWebPagePreview: true,
                parseMode: ParseMode.Html);
-
-            return new OkResult();
         }
-        
+
+        return new OkResult();
+
     }
 
     private async Task HandleUpdate(Update update, CancellationToken cancellationToken)
