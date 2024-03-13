@@ -111,7 +111,7 @@ public class ManagementFunction
 
         await _telegramBotClient.SendTextMessageAsync(
             message.Chat.Id,
-            response + " &#10024",
+            response,
             disableWebPagePreview: true,
             parseMode: ParseMode.Html);
     }

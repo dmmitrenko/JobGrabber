@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Options;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Telegram.Bot.Types;
 using UserManagementFunction.Application.Commands;
 using UserManagementFunction.Domain.Enums;
@@ -42,7 +44,7 @@ public class CommandProcessor : ICommandProcessor
 
         if (!_commandHandlers.TryGetValue(command, out var handler))
         {
-            throw new DomainException("This command doesn't exist. ");
+            return BuildAddHelpMessage();
         }
 
         return await handler(message);
@@ -58,8 +60,9 @@ public class CommandProcessor : ICommandProcessor
         };
 
         var subscriptions = await _mediator.Send(command);
-        return "Your subscriptions:\n" + string.Join("\n", subscriptions.Select(s => $"- [{s.Title}] {s.Specialty}, {s.Experience}"));
+        return "Your subscriptions:\n" + string.Join("\n", subscriptions.Select(s => $"&#128073 <code> {s.Title} </code>"));
     }
+
     private async Task<string> HandleDeleteSubscriptionCommand(Message message)
     {
         var parameters = ParseParameters(message.Text);
@@ -77,7 +80,7 @@ public class CommandProcessor : ICommandProcessor
         };
 
         await _mediator.Send(command);
-        return "Your subscription has been successfully deleted!";
+        return "Your subscription has been successfully deleted! &#128076";
     }
 
     private async Task<string> HandleAddSubscriptionCommand(Message message)
@@ -97,21 +100,40 @@ public class CommandProcessor : ICommandProcessor
                 UserId = message.From.Id,
                 Title = parameters[_addSubscriptionOptions.TitleParameter],
                 Specialty = parameters[_addSubscriptionOptions.SpecialtyParameter],
-                Experience = Convert.ToDouble(parameters[_addSubscriptionOptions.ExperienceParameter]),
+                Experience = Convert.ToDouble(parameters[_addSubscriptionOptions.ExperienceParameter], CultureInfo.InvariantCulture),
                 PreferredWebsites = new List<JobWebsites> { JobWebsites.Djini, JobWebsites.DOU },
             }
         };
 
         await _mediator.Send(command);
 
-        return "Your subscription has been successfully added!";
+        return "Your subscription has been successfully added! &#10024";
     }
 
     private Dictionary<string, string> ParseParameters(string messageText)
     {
-        return messageText.Split(' ').Skip(1)
-             .Select(part => part.Split(':'))
-             .Where(part => part.Length == 2)
-             .ToDictionary(split => split[0], split => split[1], StringComparer.OrdinalIgnoreCase);
+        var parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var parts = Regex.Matches(messageText, @"(-\w+)\s+(?:""(.+?)""|(\S+))")
+            .Cast<Match>()
+            .Select(m => new { Key = m.Groups[1].Value.TrimStart('-'), Value = m.Groups[2].Success ? m.Groups[2].Value : m.Groups[3].Value });
+
+        foreach (var part in parts)
+        {
+            parameters[part.Key] = part.Value;
+        }
+
+        return parameters;
+    }
+
+    private string BuildAddHelpMessage()
+    {
+        var helpAddMessage = $"To create a subscription, write for example: <code>{_addSubscriptionOptions.Command} -{_addSubscriptionOptions.TitleParameter} \"middle golang\" " +
+            $"-{_addSubscriptionOptions.ExperienceParameter} 2,5 -{_addSubscriptionOptions.SpecialtyParameter} golang </code>\n" +
+            $"\n <code>-{_addSubscriptionOptions.ExperienceParameter}</code> parameter to specify experience, " +
+            $"\n <code>-{_addSubscriptionOptions.TitleParameter}</code> to name your subscription, " +
+            $"\n <code>-{_addSubscriptionOptions.SpecialtyParameter}</code> to specify your technology." +
+            $"\n\n note: if your subscription name consists of several words, put them in quotes as shown in the example.";
+
+        return helpAddMessage;
     }
 }

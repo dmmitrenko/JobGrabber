@@ -5,7 +5,7 @@ using UserManagementFunction.Infrastructure.Settings;
 namespace UserManagementFunction.Application;
 public static class CommandValidator
 {
-    private const string SubscriptionTitleRegex = "^[a-zA-Z0-9]+$";
+    private const string SubscriptionTitleRegex = "^[a-zA-Z0-9 .-]+$";
 
     public static ValidationResult ValidateAddSubscription(Dictionary<string, string> parameters, AddSubscriptionCommandSettings commandParameters)
     {
@@ -25,9 +25,12 @@ public static class CommandValidator
             }
         }
 
-        if (!double.TryParse(parameters[commandParameters.ExperienceParameter], out _))
+        if (parameters.TryGetValue(commandParameters.ExperienceParameter, out var experience))
         {
-            result.Errors.Add("Experience must be a valid number.");
+            if (!double.TryParse(experience, out _))
+            {
+                result.Errors.Add("Experience must be a valid number.");
+            }
         }
 
         if (parameters.TryGetValue(commandParameters.TitleParameter, out var titleValue))
