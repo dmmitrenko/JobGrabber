@@ -12,6 +12,7 @@ using Telegram.Bot.Types.Enums;
 using Newtonsoft.Json;
 using System.IO;
 using UserManagementFunction.Infrastructure;
+using Azure;
 
 namespace UserManagementFunction;
 
@@ -34,6 +35,7 @@ public class ManagementFunction
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         log.LogInformation(requestBody);
         await Console.Out.WriteLineAsync(requestBody);
+
         var update = JsonConvert.DeserializeObject<Update>(requestBody);
 
         if (update == null)
@@ -41,10 +43,23 @@ public class ManagementFunction
             log.LogError("Failed to deserialize update.");
             return new BadRequestResult();
         }
+        try
+        {
+            await HandleUpdate(update, CancellationToken.None);
 
-        await HandleUpdate(update, CancellationToken.None);
+            return new OkResult();
+        }
+        catch (Exception)
+        {
+            await _telegramBotClient.SendTextMessageAsync(
+               update.Message.Chat.Id,
+               update.Message.Text,
+               disableWebPagePreview: true,
+               parseMode: ParseMode.Markdown);
 
-        return new OkResult();
+            return new OkResult();
+        }
+        
     }
 
     private async Task HandleUpdate(Update update, CancellationToken cancellationToken)
