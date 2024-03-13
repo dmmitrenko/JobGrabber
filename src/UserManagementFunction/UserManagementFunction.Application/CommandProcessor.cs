@@ -42,7 +42,7 @@ public class CommandProcessor : ICommandProcessor
 
         if (!_commandHandlers.TryGetValue(command, out var handler))
         {
-            throw new DomainException("There is no such command.");
+            throw new DomainException("This command doesn't exist. ");
         }
 
         return await handler(message);
@@ -110,7 +110,7 @@ public class CommandProcessor : ICommandProcessor
     private Dictionary<string, string> ParseParameters(string messageText)
     {
         return messageText.Split(' ').Skip(1)
-             .Select(part => part.Split('='))
+             .Select(part => part.Split(':'))
              .Where(part => part.Length == 2)
              .ToDictionary(split => split[0], split => split[1], StringComparer.OrdinalIgnoreCase);
     }

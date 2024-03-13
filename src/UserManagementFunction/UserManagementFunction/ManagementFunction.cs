@@ -34,7 +34,6 @@ public class ManagementFunction
     {
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         log.LogInformation(requestBody);
-        await Console.Out.WriteLineAsync(requestBody);
 
         var update = JsonConvert.DeserializeObject<Update>(requestBody);
 
@@ -43,19 +42,28 @@ public class ManagementFunction
             log.LogError("Failed to deserialize update.");
             return new BadRequestResult();
         }
+
         try
         {
             await HandleUpdate(update, CancellationToken.None);
 
             return new OkResult();
         }
+        catch (DomainException ex)
+        {
+            await _telegramBotClient.SendTextMessageAsync(
+               update.Message.Chat.Id,
+               $"{ex.Message} &#129430;",
+               disableWebPagePreview: true,
+               parseMode: ParseMode.Html);
+        }
         catch (Exception)
         {
             await _telegramBotClient.SendTextMessageAsync(
                update.Message.Chat.Id,
-               update.Message.Text,
+               $"Something went wrong &#129430;",
                disableWebPagePreview: true,
-               parseMode: ParseMode.Markdown);
+               parseMode: ParseMode.Html);
 
             return new OkResult();
         }
@@ -103,8 +111,8 @@ public class ManagementFunction
 
         await _telegramBotClient.SendTextMessageAsync(
             message.Chat.Id,
-            response,
+            response + " &#10024",
             disableWebPagePreview: true,
-            parseMode: ParseMode.Markdown);
+            parseMode: ParseMode.Html);
     }
 }
