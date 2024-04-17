@@ -35,6 +35,7 @@ public class AddSubscriptionCommandHandler : ICommandHandler
 
         var subscription = new Subscription
         {
+            ChatId = message.Chat.Id,
             UserId = message.From.Id,
             Title = parameters[_addSubscriptionCommand.TitleParameter],
             Specialty = parameters[_addSubscriptionCommand.SpecialtyParameter],

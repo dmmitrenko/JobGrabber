@@ -4,6 +4,7 @@ using Azure.Data.Tables;
 namespace UserManagementFunction.DataContext.Entities;
 public class Subscription : ITableEntity
 {
+    public long ChatId { get; set; }
     public string Title { get; set; }
     public long UserId { get; set; }
     public string Specialty { get; set; }

@@ -9,6 +9,7 @@ public class SubscriptionProfile : Profile
     public SubscriptionProfile()
     {
         CreateMap<Domain.Models.Subscription, Subscription>()
+            .ForMember(x => x.ChatId, src => src.MapFrom(dest => dest.ChatId))
             .ForMember(x => x.PartitionKey, src => src.MapFrom(dest => dest.UserId.ToString()))
             .ForMember(x => x.RowKey, src => src.MapFrom(dest => dest.Title))
             .ForMember(x => x.PreferredWebsites, src => src.Ignore())
