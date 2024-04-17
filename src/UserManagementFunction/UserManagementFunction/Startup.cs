@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Telegram.Bot;
 using UserManagementFunction.Application;
+using UserManagementFunction.Application.Handlers;
+using UserManagementFunction.Application.Helpers;
 using UserManagementFunction.DataContext.Repositories;
 using UserManagementFunction.Infrastructure;
 using UserManagementFunction.Infrastructure.Repositories;
@@ -27,6 +29,12 @@ public class Startup : FunctionsStartup
         builder.Services.ConfigureAutomapper();
 
         builder.Services.AddScoped<ICommandProcessor, CommandProcessor>();
+
+        builder.Services.AddTransient<ICommandHandler, AddSubscriptionCommandHandler>();
+        builder.Services.AddTransient<ICommandHandler, DeleteSubscriptionCommandHandler>();
+        builder.Services.AddTransient<ICommandHandler, GetSubscriptionsCommandHandler>();
+
+        builder.Services.AddScoped<IMessageBuilder, MessageBuilder>();
         builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 
         builder.Services.AddOptions();
@@ -41,8 +49,5 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddOptions<DeleteSubscriptionCommandSettings>()
                 .Configure(options => configuration.GetSection(nameof(DeleteSubscriptionCommandSettings)).Bind(options));
-
-        var value = configuration["GetSubscriptionsCommandSettings:Command"];
-        Console.WriteLine($"Config value: {value}");
     }
 }

@@ -21,7 +21,7 @@ public static class CommandValidator
         {
             if (!parameters.TryGetValue(paramName, out var value) || string.IsNullOrWhiteSpace(value))
             {
-                result.Errors.Add($"Missing or invalid parameter: {paramName}");
+                result.Errors.Add($"Missing parameter: <code> {paramName} </code>");
             }
         }
 
@@ -29,7 +29,7 @@ public static class CommandValidator
         {
             if (!double.TryParse(experience, out _))
             {
-                result.Errors.Add("Experience must be a valid number.");
+                result.Errors.Add($"<code>{commandParameters.ExperienceParameter}</code> must be a valid number.");
             }
         }
 
@@ -37,7 +37,7 @@ public static class CommandValidator
         {
             if (!Regex.IsMatch(titleValue, SubscriptionTitleRegex))
             {
-                result.Errors.Add($"{commandParameters.TitleParameter} may contain only letters and numbers.");
+                result.Errors.Add($"<code>{commandParameters.TitleParameter}</code> may contain only letters and numbers.");
             }
         }
 

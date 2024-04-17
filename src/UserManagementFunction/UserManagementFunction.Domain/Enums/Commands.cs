@@ -2,6 +2,7 @@
 
 public enum Commands : short
 {
+    Undefined,
     AddSubscription,
     DeleteSubscription,
     GetSubscriptions

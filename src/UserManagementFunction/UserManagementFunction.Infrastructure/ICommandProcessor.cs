@@ -1,7 +1,9 @@
 ﻿using Telegram.Bot.Types;
+using UserManagementFunction.Domain.Enums;
+using UserManagementFunction.Infrastructure.Models;
 
 namespace UserManagementFunction.Infrastructure;
 public interface ICommandProcessor
 {
-    Task<string> HandleCommand(Message message, CancellationToken cancellationToken = default);
+    Task<CommandResult> HandleCommand(Message message, Commands command, CancellationToken cancellationToken = default);
 }

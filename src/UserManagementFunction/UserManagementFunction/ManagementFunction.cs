@@ -12,7 +12,9 @@ using Telegram.Bot.Types.Enums;
 using Newtonsoft.Json;
 using System.IO;
 using UserManagementFunction.Infrastructure;
-using Azure;
+using System.Collections.Generic;
+using UserManagementFunction.Domain.Enums;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace UserManagementFunction;
 
@@ -20,11 +22,22 @@ public class ManagementFunction
 {
     private readonly ITelegramBotClient _telegramBotClient;
     private readonly ICommandProcessor _commandProcessor;
+    private readonly IMessageBuilder _messageBuilder;
+    private readonly Dictionary<string, Commands> CommandMappings = new Dictionary<string, Commands>
+    {
+        { "/add", Commands.AddSubscription },
+        { "/delete", Commands.DeleteSubscription },
+        { "/list", Commands.GetSubscriptions }
+    };
 
-    public ManagementFunction(ITelegramBotClient telegramBotClient, ICommandProcessor commandProcessor)
+    public ManagementFunction(
+        ITelegramBotClient telegramBotClient,
+        ICommandProcessor commandProcessor,
+        IMessageBuilder messageBuilder)
     {
         _telegramBotClient = telegramBotClient;
         _commandProcessor = commandProcessor;
+        _messageBuilder = messageBuilder;
     }
 
     [FunctionName("ManagementFunction")]
@@ -107,11 +120,24 @@ public class ManagementFunction
 
     private async Task BotOnMessageReceived(Message? message, CancellationToken cancellationToken)
     {
-        var response = await _commandProcessor.HandleCommand(message, cancellationToken);
+        var command = message.Text.Split(new[] { ' ' })[0];
+        if (!CommandMappings.TryGetValue(command, out var parsedCommand))
+        {
+            var helpAddMessage = _messageBuilder.AddHelperMessage();
+            await _telegramBotClient.SendTextMessageAsync(
+                message.Chat.Id,
+                helpAddMessage,
+                disableWebPagePreview: true,
+                parseMode: ParseMode.Html);
+
+            return;
+        }
+        var response = await _commandProcessor.HandleCommand(message, parsedCommand, cancellationToken);
+        var responseMessage = _messageBuilder.GetResponseMessage(response);
 
         await _telegramBotClient.SendTextMessageAsync(
             message.Chat.Id,
-            response,
+            responseMessage,
             disableWebPagePreview: true,
             parseMode: ParseMode.Html);
     }
