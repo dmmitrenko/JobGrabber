@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Text;
+using UserManagementFunction.Domain.Enums;
 using UserManagementFunction.Domain.Models;
 using UserManagementFunction.Infrastructure;
 using UserManagementFunction.Infrastructure.Models;
@@ -52,6 +53,19 @@ public class MessageBuilder : IMessageBuilder
         return messageBuilder.ToString();
     }
 
+    public string GetCommandHelp(Commands command)
+    {
+        switch (command)
+        {
+            case Commands.AddSubscription:
+                return AddHelperMessage();
+            case Commands.DeleteSubscription:
+                return DeleteHelperMessage();
+            default:
+                return AddHelperMessage();
+        }
+    }
+
     private string GetUserSubscriptionMessage(List<Domain.Models.Subscription>? subscriptions) 
     {
         if (subscriptions is null)
@@ -62,7 +76,7 @@ public class MessageBuilder : IMessageBuilder
         return "Your subscriptions:\n" + string.Join("\n", subscriptions.Select(s => $"&#128073 <code> {s.Title} </code>"));
     } 
 
-    public string AddHelperMessage()
+    private string AddHelperMessage()
     {
         var helpAddMessage = $"To create a subscription, write for example: <code>{_addCommand.Command} -{_addCommand.TitleParameter} \"middle golang\" " +
             $"-{_addCommand.ExperienceParameter} 2,5 -{_addCommand.SpecialtyParameter} golang </code>\n" +
@@ -74,7 +88,7 @@ public class MessageBuilder : IMessageBuilder
         return helpAddMessage;
     }
 
-    public string DeleteHelperMessage()
+    private string DeleteHelperMessage()
     {
         var helpDeleteMessage = $"To delete a subscription, write for example: <code>{_deleteCommand.Command} -{_deleteCommand.SubscriptionTitleParameter} \"middle golang\"</code>. " +
             $"\nYou can see all your subscription names by using the <code> {_getCommand.Command} </code> command";

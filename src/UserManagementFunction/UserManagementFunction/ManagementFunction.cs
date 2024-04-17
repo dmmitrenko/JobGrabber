@@ -121,9 +121,11 @@ public class ManagementFunction
     private async Task BotOnMessageReceived(Message? message, CancellationToken cancellationToken)
     {
         var command = message.Text.Split(new[] { ' ' })[0];
+        var isHelpNeeded = message.Text.Contains("-help"); 
+
         if (!CommandMappings.TryGetValue(command, out var parsedCommand))
         {
-            var helpAddMessage = _messageBuilder.AddHelperMessage();
+            var helpAddMessage = _messageBuilder.GetCommandHelp(Commands.AddSubscription);
             await _telegramBotClient.SendTextMessageAsync(
                 message.Chat.Id,
                 helpAddMessage,
@@ -132,6 +134,19 @@ public class ManagementFunction
 
             return;
         }
+
+        if (isHelpNeeded)
+        {
+            var helpMessage = _messageBuilder.GetCommandHelp(parsedCommand);
+            await _telegramBotClient.SendTextMessageAsync(
+                message.Chat.Id,
+                helpMessage,
+                disableWebPagePreview: true,
+                parseMode: ParseMode.Html);
+
+            return;
+        }
+
         var response = await _commandProcessor.HandleCommand(message, parsedCommand, cancellationToken);
         var responseMessage = _messageBuilder.GetResponseMessage(response);
 
