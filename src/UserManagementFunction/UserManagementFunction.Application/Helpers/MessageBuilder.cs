@@ -61,6 +61,8 @@ public class MessageBuilder : IMessageBuilder
                 return AddHelperMessage();
             case Commands.DeleteSubscription:
                 return DeleteHelperMessage();
+            case Commands.GetSubscriptions:
+                return GetHelperMessage();
             default:
                 return AddHelperMessage();
         }
@@ -94,5 +96,11 @@ public class MessageBuilder : IMessageBuilder
             $"\nYou can see all your subscription names by using the <code> {_getCommand.Command} </code> command";
 
         return helpDeleteMessage;
+    }
+
+    private string GetHelperMessage()
+    {
+        var getHelperMessage = $"This command doesn't require any parameters.";
+        return getHelperMessage;
     }
 }
