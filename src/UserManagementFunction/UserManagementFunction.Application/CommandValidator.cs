@@ -49,15 +49,16 @@ public static class CommandValidator
     {
         var result = new ValidationResult();
 
-        var requiredParameters = new[] {
-            commandParameters.SubscriptionTitleParameter,
-        };
+        if (!parameters.TryGetValue(commandParameters.SubscriptionTitleParameter, out var value) || string.IsNullOrWhiteSpace(value))
+        {
+            result.Errors.Add($"Missing parameter: <code> {commandParameters.SubscriptionTitleParameter} </code>");
+        }
 
         if (parameters.TryGetValue(commandParameters.SubscriptionTitleParameter, out var titleValue))
         {
             if (!Regex.IsMatch(titleValue, SubscriptionTitleRegex))
             {
-                result.Errors.Add($"{commandParameters.SubscriptionTitleParameter} may contain only letters and numbers.");
+                result.Errors.Add($"<code>{commandParameters.SubscriptionTitleParameter}</code> may contain only letters and numbers.");
             }
         }
 

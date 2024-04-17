@@ -27,7 +27,7 @@ public class ManagementFunction
     {
         { "/add", Commands.AddSubscription },
         { "/delete", Commands.DeleteSubscription },
-        { "/list", Commands.GetSubscriptions }
+        { "/get", Commands.GetSubscriptions }
     };
 
     public ManagementFunction(
