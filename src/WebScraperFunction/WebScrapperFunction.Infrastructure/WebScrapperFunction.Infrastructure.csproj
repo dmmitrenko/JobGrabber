@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WebScrapperFunction.Domain\WebScrapperFunction.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
