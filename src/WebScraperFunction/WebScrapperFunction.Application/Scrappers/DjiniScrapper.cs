@@ -33,7 +33,7 @@ public class DjiniScrapper : IJobScraper
         var query = new StringBuilder("/jobs/?");
 
         query.Append($"primary_keyword={Uri.EscapeDataString(specialty.ToUpper())}&");
-        query.Append($"exp_level={Uri.EscapeDataString(Convert.ToInt16(experience).ToString())}");
+        query.Append($"exp_level={Uri.EscapeDataString(Convert.ToInt16(experience).ToString())}y");
 
         var response = await _httpClient.GetAsync(query.ToString());
         response.EnsureSuccessStatusCode();
