@@ -3,5 +3,7 @@
 namespace WebScrapperFunction.Infrastructure.Repositories;
 public interface ISubscriptionRepository
 {
-    Task<Dictionary<string, List<Subscription>>> GetSubscriptionsGroupedByTechnology();
+    Task<List<Subscription>> GetAllSubscriptions();
+    Task<List<Subscription>> GetDefaultSubscriptions();
+    Task<List<Subscription>> GetPremiumSubscriptions();
 }

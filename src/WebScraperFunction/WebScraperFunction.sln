@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScraperFunction", "WebScraperFunction\WebScraperFunction.csproj", "{97C8E52D-6382-4579-BFE6-64E5217F093B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScrapperFunction.DataContext", "WebScrapperFunction.DataContext\WebScrapperFunction.DataContext.csproj", "{A7D70CEC-CAA3-460E-838A-500BCEFE7BCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScrapperFunction.DataContext", "WebScrapperFunction.DataContext\WebScrapperFunction.DataContext.csproj", "{A7D70CEC-CAA3-460E-838A-500BCEFE7BCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScrapperFunction.Application", "WebScrapperFunction.Application\WebScrapperFunction.Application.csproj", "{412F11DC-C4DF-4EFE-BA03-4A5851D37336}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScrapperFunction.Application", "WebScrapperFunction.Application\WebScrapperFunction.Application.csproj", "{412F11DC-C4DF-4EFE-BA03-4A5851D37336}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScrapperFunction.Infrastructure", "WebScrapperFunction.Infrastructure\WebScrapperFunction.Infrastructure.csproj", "{B0A2DD51-EFCD-4A7E-82FB-2760C98F4A2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScrapperFunction.Infrastructure", "WebScrapperFunction.Infrastructure\WebScrapperFunction.Infrastructure.csproj", "{B0A2DD51-EFCD-4A7E-82FB-2760C98F4A2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScrapperFunction.Domain", "WebScrapperFunction.Domain\WebScrapperFunction.Domain.csproj", "{2A40D49F-2D09-4B8A-8491-E621C49E1B20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScrapperFunction.Domain", "WebScrapperFunction.Domain\WebScrapperFunction.Domain.csproj", "{2A40D49F-2D09-4B8A-8491-E621C49E1B20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScrapperFunction", "WebScrapperFunction\WebScrapperFunction.csproj", "{7A5330CB-2072-49A8-B919-9A9D89D7AE34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{97C8E52D-6382-4579-BFE6-64E5217F093B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97C8E52D-6382-4579-BFE6-64E5217F093B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97C8E52D-6382-4579-BFE6-64E5217F093B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97C8E52D-6382-4579-BFE6-64E5217F093B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7D70CEC-CAA3-460E-838A-500BCEFE7BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7D70CEC-CAA3-460E-838A-500BCEFE7BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7D70CEC-CAA3-460E-838A-500BCEFE7BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +35,10 @@ Global
 		{2A40D49F-2D09-4B8A-8491-E621C49E1B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A40D49F-2D09-4B8A-8491-E621C49E1B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A40D49F-2D09-4B8A-8491-E621C49E1B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A5330CB-2072-49A8-B919-9A9D89D7AE34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A5330CB-2072-49A8-B919-9A9D89D7AE34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A5330CB-2072-49A8-B919-9A9D89D7AE34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A5330CB-2072-49A8-B919-9A9D89D7AE34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

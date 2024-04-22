@@ -14,22 +14,46 @@ public class SubscriptionRepository : ISubscriptionRepository
         _mapper = mapper;
     }
 
-    public async Task<Dictionary<string, List<Subscription>>> GetSubscriptionsGroupedByTechnology()
+    public async Task<List<Subscription>> GetDefaultSubscriptions()
+    {
+        var tableClient = await GetTableClient();
+        var query = tableClient.QueryAsync<Entities.Subscription>(filter: $"EntityType eq 'Subscription' and IsPremium eq false");
+
+        var subscriptions = new List<Subscription>();
+
+        await foreach (var entity in query)
+        {
+            subscriptions.Add(_mapper.Map<Subscription>(entity));
+        }
+        return subscriptions;
+    }
+
+    public async Task<List<Subscription>> GetPremiumSubscriptions()
+    {
+        var tableClient = await GetTableClient();
+        var query = tableClient.QueryAsync<Entities.Subscription>(filter: $"EntityType eq 'Subscription' and IsPremium eq true");
+
+        var subscriptions = new List<Subscription>();
+
+        await foreach (var entity in query)
+        {
+            subscriptions.Add(_mapper.Map<Subscription>(entity));
+        }
+        return subscriptions;
+    }
+
+    public async Task<List<Subscription>> GetAllSubscriptions()
     {
         var tableClient = await GetTableClient();
         var query = tableClient.QueryAsync<Entities.Subscription>(filter: $"EntityType eq 'Subscription'");
 
-        var groupedBySpecialty = new Dictionary<string, List<Subscription>>();
+        var subscriptions = new List<Subscription>();
 
         await foreach (var entity in query)
         {
-            if (!groupedBySpecialty.ContainsKey(entity.Specialty))
-            {
-                groupedBySpecialty[entity.Specialty] = new List<Subscription>();
-            }
-            groupedBySpecialty[entity.Specialty].Add(_mapper.Map<Subscription>(entity));
+            subscriptions.Add(_mapper.Map<Subscription>(entity));
         }
-        return groupedBySpecialty;
+        return subscriptions;
     }
 
     private async Task<TableClient> GetTableClient(CancellationToken cancellationToken = default)

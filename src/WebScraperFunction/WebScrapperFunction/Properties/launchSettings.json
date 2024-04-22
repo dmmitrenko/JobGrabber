@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "WebScraperFunction": {
+    "WebScrapperFunction": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7186",
+      "commandLineArgs": "--port 7102",
       "launchBrowser": false
     }
   }
