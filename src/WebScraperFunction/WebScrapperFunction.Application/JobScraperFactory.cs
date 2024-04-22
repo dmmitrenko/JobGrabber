@@ -10,9 +10,9 @@ public static class JobScraperFactory
         switch (website)
         {
             case JobWebsites.Djini:
-                return new DjiniScrapper();
+                return new DjiniScrapper(httpClientFactory.CreateClient(JobWebsites.Djini.ToString()));
             case JobWebsites.DOU:
-                return new DouScrapper();
+                return new DouScrapper(httpClientFactory.CreateClient(JobWebsites.DOU.ToString()));
             default:
                 throw new ArgumentException("Invalid job site");
         }

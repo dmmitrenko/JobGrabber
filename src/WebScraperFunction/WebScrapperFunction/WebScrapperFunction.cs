@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using WebScrapperFunction.Infrastructure;
 
 namespace WebScrapperFunction
@@ -24,24 +25,27 @@ namespace WebScrapperFunction
         }
 
         [FunctionName("RegularUserJob")]
-        public async Task RegularUserRun([TimerTrigger("%JobSearchSettings:CheckInterval:Default%")] TimerInfo myTimer, ILogger log)
+        public async Task RegularUserRun([TimerTrigger("*/30 * * * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"Regular user job fetch executed at: {DateTime.Now}");
             var vacancies = await _jobService.GetJobsForEachSubscription();
 
             foreach (var vacancy in vacancies)
             {
-                var message = _messageBuilder
+                foreach (var item in vacancy.Value)
+                {
+                    var message = _messageBuilder
                     .StartMessage()
-                    .AddVacancies(vacancy.Value)
+                    .AddVacancy(item)
                     .Build();
 
-                await _telegramBotClient.SendTextMessageAsync(
-                    vacancy.Key,
-                    message,
-                    disableWebPagePreview: true,
-                    parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
-                
+                    await _telegramBotClient.SendTextMessageAsync(
+                        vacancy.Key,
+                        message,
+                        disableWebPagePreview: true,
+                        parseMode: ParseMode.Html);
+
+                }
             }
         }
     }

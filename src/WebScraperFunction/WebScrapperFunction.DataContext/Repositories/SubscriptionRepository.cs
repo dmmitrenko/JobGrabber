@@ -6,7 +6,7 @@ using WebScrapperFunction.Infrastructure.Repositories;
 namespace WebScrapperFunction.DataContext.Repositories;
 public class SubscriptionRepository : ISubscriptionRepository
 {
-    private const string TableName = nameof(Entities.Subscription);
+    private const string TableName = nameof(Subscription);
     private readonly IMapper _mapper;
 
     public SubscriptionRepository(IMapper mapper)
@@ -17,11 +17,10 @@ public class SubscriptionRepository : ISubscriptionRepository
     public async Task<List<Subscription>> GetDefaultSubscriptions()
     {
         var tableClient = await GetTableClient();
-        var query = tableClient.QueryAsync<Entities.Subscription>(filter: $"EntityType eq 'Subscription' and IsPremium eq false");
 
         var subscriptions = new List<Subscription>();
 
-        await foreach (var entity in query)
+        await foreach (var entity in tableClient.QueryAsync<Entities.Subscription>(filter: ""))
         {
             subscriptions.Add(_mapper.Map<Subscription>(entity));
         }
@@ -45,11 +44,10 @@ public class SubscriptionRepository : ISubscriptionRepository
     public async Task<List<Subscription>> GetAllSubscriptions()
     {
         var tableClient = await GetTableClient();
-        var query = tableClient.QueryAsync<Entities.Subscription>(filter: $"EntityType eq 'Subscription'");
 
         var subscriptions = new List<Subscription>();
 
-        await foreach (var entity in query)
+        await foreach (var entity in tableClient.QueryAsync<Entities.Subscription>(filter: ""))
         {
             subscriptions.Add(_mapper.Map<Subscription>(entity));
         }
