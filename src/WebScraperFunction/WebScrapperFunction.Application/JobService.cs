@@ -1,21 +1,26 @@
-﻿using System.Collections.Concurrent;
+﻿using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 using WebScrapperFunction.Domain.Enums;
 using WebScrapperFunction.Domain.Models;
 using WebScrapperFunction.Infrastructure;
 using WebScrapperFunction.Infrastructure.Repositories;
+using WebScrapperFunction.Infrastructure.Settings;
 
 namespace WebScrapperFunction.Application;
 public class JobService : IJobService
 {
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly JobSearchingSettings _jobSearchingSettings;
 
     public JobService(
         ISubscriptionRepository subscriptionRepository,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        IOptions<JobSearchingSettings> jobSearchingSettings)
     {
         _subscriptionRepository = subscriptionRepository;
         _httpClientFactory = httpClientFactory;
+        _jobSearchingSettings = jobSearchingSettings.Value;
     }
 
     public async Task<Dictionary<long, List<Vacancy>>> GetJobsForEachSubscription()
@@ -60,7 +65,7 @@ public class JobService : IJobService
         //}
 
         var scraper = JobScraperFactory.GetScraper(website, _httpClientFactory);
-        var scrapedVacancies = await scraper.ScrapeJobs(subscription.Specialty, subscription.Experience);
+        var scrapedVacancies = await scraper.ScrapeJobs(subscription.Specialty, subscription.Experience, _jobSearchingSettings.DefaultCheckInterval);
         //await _cacheService.SetCachedVacancies(cacheKey, scrapedVacancies);
 
         return scrapedVacancies;

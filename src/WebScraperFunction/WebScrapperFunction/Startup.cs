@@ -11,6 +11,8 @@ using WebScrapperFunction.Domain.Enums;
 using WebScrapperFunction.Infrastructure;
 using WebScrapperFunction.Infrastructure.Repositories;
 using System.Reflection;
+using WebScrapperFunction.Infrastructure.Settings;
+using Microsoft.Extensions.Configuration;
 
 [assembly: FunctionsStartup(typeof(WebScrapperFunction.Startup))]
 
@@ -35,6 +37,13 @@ public class Startup : FunctionsStartup
         builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
         builder.Services.ConfigureAutomapper();
+
+        builder.Services.AddOptions();
+
+        var configuration = builder.GetContext().Configuration;
+
+        builder.Services.AddOptions<JobSearchingSettings>()
+            .Configure(options => configuration.GetSection(nameof(JobSearchingSettings)).Bind(options));
 
         builder.Services.AddScoped(x => new ResourceManager("WebScrapperFunction.Resources.Messages", Assembly.GetExecutingAssembly()));
 

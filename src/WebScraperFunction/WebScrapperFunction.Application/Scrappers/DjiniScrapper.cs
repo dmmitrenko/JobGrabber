@@ -17,7 +17,7 @@ public class DjiniScrapper : IJobScraper
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<List<Vacancy>> ScrapeJobs(string specialty, double experience)
+    public async Task<List<Vacancy>> ScrapeJobs(string specialty, double experience, TimeSpan period = default)
     {
         var response = await GetHtmlContent(specialty, experience);
         if (string.IsNullOrEmpty(response))
@@ -25,7 +25,9 @@ public class DjiniScrapper : IJobScraper
             return new List<Vacancy>();
         }
 
-        return GetVacanciesFromHtml(response);
+        var newVacancies = GetVacanciesFromHtml(response);
+        var dateTime = DateTime.Now - period;
+        return newVacancies.Where(x => x.PostedDate > dateTime).ToList();
     }
 
     private async Task<string> GetHtmlContent(string specialty, double experience)

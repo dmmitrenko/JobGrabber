@@ -11,7 +11,7 @@ internal class DouScrapper : IJobScraper
         _httpClient = httpClient;
     }
 
-    public Task<List<Vacancy>> ScrapeJobs(string specialty, double experience)
+    public Task<List<Vacancy>> ScrapeJobs(string specialty, double experience, TimeSpan period = default)
     {
         return Task.FromResult(new List<Vacancy>());
     }
