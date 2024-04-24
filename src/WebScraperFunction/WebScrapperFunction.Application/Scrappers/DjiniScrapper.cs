@@ -25,9 +25,11 @@ public class DjiniScrapper : IJobScraper
             return new List<Vacancy>();
         }
 
-        var newVacancies = GetVacanciesFromHtml(response);
-        var dateTime = DateTime.Now - period;
-        return newVacancies.Where(x => x.PostedDate > dateTime).ToList();
+        var newVacancies = GetVacanciesFromHtml(response)
+            .Where(x => x.PostedDate > DateTime.Now - period)
+            .ToList();
+
+        return newVacancies;
     }
 
     private async Task<string> GetHtmlContent(string specialty, double experience)
