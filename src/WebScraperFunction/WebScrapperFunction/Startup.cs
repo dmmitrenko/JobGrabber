@@ -13,6 +13,7 @@ using WebScrapperFunction.Infrastructure.Repositories;
 using System.Reflection;
 using WebScrapperFunction.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 
 [assembly: FunctionsStartup(typeof(WebScrapperFunction.Startup))]
 
@@ -29,7 +30,14 @@ public class Startup : FunctionsStartup
         }
 
         builder.Services.AddSingleton<ITelegramBotClient, TelegramBotClient>(sp => new TelegramBotClient(botToken));
-        //builder.Services.AddScoped(provider => provider.GetService<IConnectionMultiplexer>().GetDatabase());
+
+        var redisConnectionString = Environment.GetEnvironmentVariable("RedisConnectionString");
+        var multiplexer = ConnectionMultiplexer.Connect(redisConnectionString);
+
+        builder.Services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+        builder.Services.AddSingleton(provider => provider.GetService<IConnectionMultiplexer>().GetDatabase());
+
+        builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
         builder.Services.AddScoped<IJobService, JobService>();
         builder.Services.AddScoped<IMessageBuilder, MessageBuilder>();
@@ -44,6 +52,9 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddOptions<JobSearchingSettings>()
             .Configure(options => configuration.GetSection(nameof(JobSearchingSettings)).Bind(options));
+
+        builder.Services.AddOptions<CacheSettings>()
+            .Configure(options => configuration.GetSection(nameof(CacheSettings)).Bind(options));
 
         builder.Services.AddScoped(x => new ResourceManager("WebScrapperFunction.Resources.Messages", Assembly.GetExecutingAssembly()));
 

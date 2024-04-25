@@ -11,15 +11,18 @@ public class JobService : IJobService
 {
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ICacheService _cacheService;
     private readonly JobSearchingSettings _jobSearchingSettings;
 
     public JobService(
         ISubscriptionRepository subscriptionRepository,
         IHttpClientFactory httpClientFactory,
-        IOptions<JobSearchingSettings> jobSearchingSettings)
+        IOptions<JobSearchingSettings> jobSearchingSettings,
+        ICacheService cacheService)
     {
         _subscriptionRepository = subscriptionRepository;
         _httpClientFactory = httpClientFactory;
+        _cacheService = cacheService;
         _jobSearchingSettings = jobSearchingSettings.Value;
     }
 
@@ -53,20 +56,19 @@ public class JobService : IJobService
         });
     }
 
-    // TODO: uncomment and setup cache
     private async Task<List<Vacancy>> FetchVacancies(Subscription subscription, JobWebsites website)
     {
-        //string cacheKey = $"{subscription.Specialty}-{subscription.Experience}-{website}";
-        //var cachedVacancies = await _cacheService.GetCachedVacancies(cacheKey);
+        string cacheKey = $"{subscription.Specialty}-{subscription.Experience}-{website}";
+        var cachedVacancies = await _cacheService.GetCachedVacancies(cacheKey);
 
-        //if (cachedVacancies != null)
-        //{
-        //    return cachedVacancies;
-        //}
+        if (cachedVacancies.Any())
+        {
+            return cachedVacancies;
+        }
 
         var scraper = JobScraperFactory.GetScraper(website, _httpClientFactory);
         var scrapedVacancies = await scraper.ScrapeJobs(subscription.Specialty, subscription.Experience, _jobSearchingSettings.DefaultCheckInterval);
-        //await _cacheService.SetCachedVacancies(cacheKey, scrapedVacancies);
+        await _cacheService.SetCachedVacancies(cacheKey, scrapedVacancies);
 
         return scrapedVacancies;
     }
