@@ -43,10 +43,10 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ matrix.function }}
-        path: ./published
+        path: ./published/${{ matrix.function }}
     - name: Deploy to Azure Function App
       uses: Azure/functions-action@v1
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
         publish-profile: ${{ secrets.JobGrabberManagementFunctionApp_EE1D }}
-        package: ./published
+        package: ./published/${{ matrix.function }}
