@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScrapperFunction.DataContext", "WebScrapperFunction.DataContext\WebScrapperFunction.DataContext.csproj", "{A7D70CEC-CAA3-460E-838A-500BCEFE7BCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScraperFunction.DataContext", "WebScraperFunction.DataContext\WebScraperFunction.DataContext.csproj", "{A7D70CEC-CAA3-460E-838A-500BCEFE7BCD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScrapperFunction.Application", "WebScrapperFunction.Application\WebScrapperFunction.Application.csproj", "{412F11DC-C4DF-4EFE-BA03-4A5851D37336}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScraperFunction.Application", "WebScraperFunction.Application\WebScraperFunction.Application.csproj", "{412F11DC-C4DF-4EFE-BA03-4A5851D37336}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScrapperFunction.Infrastructure", "WebScrapperFunction.Infrastructure\WebScrapperFunction.Infrastructure.csproj", "{B0A2DD51-EFCD-4A7E-82FB-2760C98F4A2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScraperFunction.Infrastructure", "WebScraperFunction.Infrastructure\WebScraperFunction.Infrastructure.csproj", "{B0A2DD51-EFCD-4A7E-82FB-2760C98F4A2A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScrapperFunction.Domain", "WebScrapperFunction.Domain\WebScrapperFunction.Domain.csproj", "{2A40D49F-2D09-4B8A-8491-E621C49E1B20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScraperFunction.Domain", "WebScraperFunction.Domain\WebScraperFunction.Domain.csproj", "{2A40D49F-2D09-4B8A-8491-E621C49E1B20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScrapperFunction", "WebScrapperFunction\WebScrapperFunction.csproj", "{7A5330CB-2072-49A8-B919-9A9D89D7AE34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebScraperFunction", "WebScraperFunction\WebScraperFunction.csproj", "{7A5330CB-2072-49A8-B919-9A9D89D7AE34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
