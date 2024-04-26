@@ -20,12 +20,12 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
     - name: Restore
-      run: dotnet restore src/${{ matrix.function }}/${{ matrix.function }}.csproj
+      run: dotnet restore src/${{ matrix.function }}/${{ matrix.function }}/${{ matrix.function }}.csproj
     - name: Build
-      run: dotnet build src/${{ matrix.function }}/${{ matrix.function }}.csproj --configuration ${{ env.CONFIGURATION }} --no-restore
+      run: dotnet build src/${{ matrix.function }}/${{ matrix.function }}/${{ matrix.function }}.csproj --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Publish
       run: | 
-        dotnet publish src/${{ matrix.function }}/${{ matrix.function }}.csproj --configuration ${{ env.CONFIGURATION }} --no-build --output ./published/${{ matrix.function }}
+        dotnet publish src/${{ matrix.function }}/${{ matrix.function }}/${{ matrix.function }}.csproj --configuration ${{ env.CONFIGURATION }} --no-build --output ./published/${{ matrix.function }}
         echo "FUNCTION_APP_PATH=./published/${{ matrix.function }}" >> $GITHUB_ENV
     - name: Publish Artifacts
       uses: actions/upload-artifact@v3
