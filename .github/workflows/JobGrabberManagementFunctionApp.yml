@@ -1,4 +1,4 @@
-name: Build and deploy .NET Core application to Function App JobGrabberManagementFunctionApp
+name: Build and deploy ManagementFunctionApp
 on:
   push:
     branches:
