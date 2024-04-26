@@ -5,13 +5,14 @@ on:
     - main
 env:
   AZURE_FUNCTIONAPP_NAME: JobGrabberManagementFunctionApp
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: .\published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 6.0.x
-  WORKING_DIRECTORY: 'src/UserManagementFunction/UserManagementFunction'
 jobs:
   build:
     runs-on: windows-latest
+    strategy: 
+      matrix:
+        function: [UserManagementFunction, WebScrapperFunction]
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET SDK
@@ -19,16 +20,18 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
     - name: Restore
-      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+      run: dotnet restore src/${{ matrix.function }}/${{ matrix.function }}.csproj
     - name: Build
-      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+      run: dotnet build src/${{ matrix.function }}/${{ matrix.function }}.csproj --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}"
+      run: | 
+        dotnet publish src/${{ matrix.function }}/${{ matrix.function }}.csproj --configuration ${{ env.CONFIGURATION }} --no-build --output ./published/${{ matrix.function }}
+        echo "FUNCTION_APP_PATH=./published/${{ matrix.function }}" >> $GITHUB_ENV
     - name: Publish Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: functionapp
-        path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        name: ${{ matrix.function }}
+        path: ./published/${{ matrix.function }}
   deploy:
     runs-on: windows-latest
     needs: build
@@ -36,11 +39,10 @@ jobs:
     - name: Download artifact from build job
       uses: actions/download-artifact@v3
       with:
-        name: functionapp
-        path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        path: ./published
     - name: Deploy to Azure Function App
       uses: Azure/functions-action@v1
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
         publish-profile: ${{ secrets.JobGrabberManagementFunctionApp_EE1D }}
-        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        package: ./published
