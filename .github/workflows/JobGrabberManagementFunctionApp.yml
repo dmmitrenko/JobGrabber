@@ -12,7 +12,7 @@ jobs:
     runs-on: windows-latest
     strategy: 
       matrix:
-        function: [UserManagementFunction, WebScraperFunction]
+        function: [WebScraperFunction]
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET SDK
@@ -37,7 +37,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        function: [UserManagementFunction, WebScraperFunction]
+        function: [WebScraperFunction]
     steps:
     - name: Download artifact from build job
       uses: actions/download-artifact@v3

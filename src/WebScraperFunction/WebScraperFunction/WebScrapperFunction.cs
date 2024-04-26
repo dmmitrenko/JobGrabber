@@ -24,7 +24,7 @@ namespace WebScraperFunction
             _messageBuilder = messageBuilder;
         }
 
-        [FunctionName("RegularUserJob")]
+        [FunctionName("WebScraperFunction")]
         public async Task RegularUserRun([TimerTrigger("0 0 * * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"Regular user job fetch executed at: {DateTime.Now}");
