@@ -25,7 +25,7 @@ namespace WebScrapperFunction
         }
 
         [FunctionName("RegularUserJob")]
-        public async Task RegularUserRun([TimerTrigger("*/30 * * * * *")] TimerInfo myTimer, ILogger log)
+        public async Task RegularUserRun([TimerTrigger("0 0 * * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"Regular user job fetch executed at: {DateTime.Now}");
             var vacancies = await _jobService.GetJobsForEachSubscription();
